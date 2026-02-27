@@ -2317,6 +2317,8 @@ setTimeout(hideLoader, 3000);
 
 // ===== BUILD DOMINANCE GRID =====
 (function buildDominance() {
+  const grid = document.getElementById('dominanceGrid');
+  if (!grid) return;
   dominanceData.forEach((d, i) => {
     const cell = document.createElement('div');
     cell.className = 'dominance-cell reveal';
@@ -2371,23 +2373,30 @@ setTimeout(hideLoader, 3000);
 // ===== DRAW GROWTH CHART =====
 (function drawGrowthChart() {
   const canvas = document.getElementById('growthChart');
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
   let drawn = false;
   let animProgress = 0;
+  let cssWidth = 0;
+  let cssHeight = 400;
+  let dpr = 1;
   
   function resizeCanvas() {
     const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width * (window.devicePixelRatio || 1);
-    canvas.height = 400 * (window.devicePixelRatio || 1);
+    dpr = window.devicePixelRatio || 1;
+    cssWidth = rect.width;
+    cssHeight = 400;
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
     canvas.style.width = rect.width + 'px';
     canvas.style.height = '400px';
-    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   
   function render(progress) {
-    resizeCanvas();
-    const W = canvas.style.width.replace('px','') * 1;
-    const H = 400;
+    const W = cssWidth;
+    const H = cssHeight;
     const pad = { top:40, right:30, bottom:50, left:80 };
     const chartW = W - pad.left - pad.right;
     const chartH = H - pad.top - pad.bottom;
@@ -2408,7 +2417,7 @@ setTimeout(hideLoader, 3000);
     }
     
     // Y-axis grid lines at log-scale ticks
-    const gridSteps = [10, 50, 100, 200, 500, 1000, 1800];
+    const gridSteps = [10, 50, 100, 200, 500, 1000, 1810];
     ctx.lineWidth = 1;
     gridSteps.forEach(v => {
       const y = toY(v);
@@ -2504,7 +2513,7 @@ setTimeout(hideLoader, 3000);
         ctx.stroke();
         // Label — alternate above/below to avoid clashes
         const labelY = p.y - (isMega ? 16 : 14);
-        ctx.fillStyle = isMega ? 'var(--gold)' : '#fff';
+        ctx.fillStyle = isMega ? '#f5c518' : '#fff';
         ctx.font = (isMega ? 'bold ' : '') + '10px DM Sans';
         ctx.textAlign = 'center';
         const labelStr = val >= 1000 ? '₹' + (val/1000).toFixed(1).replace('.0','') + 'k' : '₹' + val;
@@ -2528,9 +2537,13 @@ setTimeout(hideLoader, 3000);
       }
     });
   }, { threshold: 0.3 });
+  resizeCanvas();
   observer.observe(canvas);
   
-  window.addEventListener('resize', () => { if (drawn) render(animProgress); });
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    if (drawn) render(animProgress);
+  });
 })();
 
 // ===== INTERSECTION OBSERVER FOR REVEALS =====
