@@ -3092,7 +3092,7 @@ document.querySelectorAll('.dominance-cell').forEach((cell, i) => {
       heroMatches.forEach(h => {
         html += '<div class="search-result-item" data-type="hero" data-name="' + escHTML(h.name) + '">' +
           '<div class="search-result-photo" style="border:2px solid ' + h.color + ';background:' + h.color + '22;">' +
-            '<img src="' + h.img + '" alt="' + escHTML(h.name) + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">' +
+            '<img src="' + h.img + '" alt="' + escHTML(h.name) + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\x27none\x27">' +
           '</div>' +
           '<div>' +
             '<div class="search-result-title">' + escHTML(h.name) + '</div>' +
